@@ -1,0 +1,40 @@
+name: Build, Test & Dockerize Static Site
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-test-dockerize:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🛎️ Checkout Code
+        uses: actions/checkout@v3
+
+      # 🧪 Install Lint Tools
+      - name: 📦 Install HTMLHint and Stylelint
+        run: |
+          npm install -g htmlhint stylelint stylelint-config-standard
+
+      - name: 🧪 Run HTML Tests
+        run: htmlhint "**/*.html"
+
+      # 🛠️ Set up Docker Buildx
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 🔐 Log in to Docker Hub
+      - name: 🔐 Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      # 🏗️ Build & Push Docker Image
+      - name: 🚀 Build & Push Docker Image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile  # Make sure path is correct
+          push: true
+          tags: yourdockerhubuser/projectimage:latest
