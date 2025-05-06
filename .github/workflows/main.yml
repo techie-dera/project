@@ -16,7 +16,7 @@ jobs:
 
     # Log in to Docker Hub
     - name: Log in to Docker Hub
-      run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+      run: echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
     # Set up Docker Buildx
     - name: Set up Docker Buildx
