@@ -37,4 +37,5 @@ jobs:
           context: .
           file: ./Dockerfile  # Make sure path is correct
           push: true
-          tags: yourdockerhubuser/projectimage:latest
+          tags: techiedera/projectimage:latest
+
