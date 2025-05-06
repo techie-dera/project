@@ -1,41 +1,32 @@
-name: Build, Test & Dockerize Static Site
+name: Build and Push Docker Image
 
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    branches:
+      - main  # Change this to the branch you want to trigger the build on
 
 jobs:
-  build-test-dockerize:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🛎️ Checkout Code
-        uses: actions/checkout@v3
+    # Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      # 🧪 Install Lint Tools
-      - name: 📦 Install HTMLHint and Stylelint
-        run: |
-          npm install -g htmlhint stylelint stylelint-config-standard
+    # Log in to Docker Hub
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-      - name: 🧪 Run HTML Tests
-        run: htmlhint "**/*.html"
+    # Set up Docker Buildx
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
 
-      # 🛠️ Set up Docker Buildx
-      - name: 🐳 Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      # 🔐 Log in to Docker Hub
-      - name: 🔐 Log in to Docker Hub
-        run: echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-      # 🏗️ Build & Push Docker Image
-      - name: 🚀 Build & Push Docker Image
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          file: ./Dockerfile  # Make sure path is correct
-          push: true
-          tags: techiedera/projectimage:latest
+    # Build and push Docker image
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/projectimage:latest
 
